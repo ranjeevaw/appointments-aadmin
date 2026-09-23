@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { db } from "./firebase";
@@ -12,23 +14,21 @@ export default function AdminDelete() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+const [error, setError] = useState("");
 
-  const ADMIN_USER = "admin";
-  const ADMIN_PASSWORD = "iruehquh9817987";
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      navigate("/admin");
+    }
+  });
+
+  return unsubscribe;
+}, [navigate]);
 
   const handleDelete = async () => {
     setError("");
 
-    if (
-      username !== ADMIN_USER ||
-      password !== ADMIN_PASSWORD
-    ) {
-      setError("Invalid username or password");
-      return;
-    }
 
     const confirmed = window.confirm(
       "Are you sure you want to cancel this appointment?"
@@ -42,13 +42,13 @@ export default function AdminDelete() {
       await updateDoc(doc(db, "appointments", id), {
         deleted: true,
         deletedAt: new Date(),
-        deletedBy: username,
+        deletedBy: auth.currentUser?.email || "Unknown",
         updated: new Date(),
       });
 
       alert("Appointment cancelled successfully");
 
-      navigate("/alms-calendar");
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError("Failed to cancel appointment");
@@ -66,9 +66,7 @@ export default function AdminDelete() {
       <h2>Admin Appointment Cancellation</h2>
 
       <p>
-        This action will mark the appointment as
-        cancelled but will not remove it from the
-        database.
+        Please click cancel appointment below to cancel the appointment.
       </p>
 
       {error && (
@@ -86,36 +84,7 @@ export default function AdminDelete() {
         </div>
       )}
 
-      <div style={{ marginBottom: 15 }}>
-        <label>Username</label>
-        <br />
-        <input
-          style={{
-            width: "100%",
-            padding: 8,
-          }}
-          value={username}
-          onChange={(e) =>
-            setUsername(e.target.value)
-          }
-        />
-      </div>
 
-      <div style={{ marginBottom: 15 }}>
-        <label>Password</label>
-        <br />
-        <input
-          type="password"
-          style={{
-            width: "100%",
-            padding: 8,
-          }}
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-        />
-      </div>
 
       <div
         style={{
@@ -128,7 +97,7 @@ export default function AdminDelete() {
         </button>
 
         <button
-          onClick={() => navigate("/alms-calendar")}
+          onClick={() => navigate("/")}
         >
           Back
         </button>

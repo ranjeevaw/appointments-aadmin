@@ -41,10 +41,24 @@ export default function CalendarPage() {
 
   const [user, loading] = useAuthState(auth);
   const [events, setEvents] = useState([]);
+  const [copied, setCopied] = useState("");
   const navigate = useNavigate();
 
 const isAdmin = !!user;
 
+const copyToClipboard = async (text, field) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    setCopied(field);
+
+    setTimeout(() => {
+      setCopied("");
+    }, 2000);
+  } catch (error) {
+    console.error("Failed to copy:", error);
+    alert("Unable to copy. Please copy it manually.");
+  }
+};
 
 useEffect(() => {
 
@@ -195,7 +209,7 @@ const dayPropGetter = (date) => {
     <button
 onClick={async () => {
     await signOut(auth);
-    navigate("/admin-login");
+    navigate("/");
 }}
       style={{
         padding: "8px 12px",
@@ -240,7 +254,7 @@ onClick={async () => {
   </h3>
 
   <ul style={{ marginBottom: 0 }}>
-    <li>On Mobile phones long press on an empty cell to start adding a new appointment.</li>
+    <li>On Mobile phones long press on an empty cell to start adding a new appointment. If there are other appointments and you need to add another long press on empty part of the cell.</li>
     <li>Select an available future date on the calendar.</li>
     <li>Choose the appropriate meal offering type.</li>
     <li>Complete all required fields in the booking form.</li>
@@ -248,7 +262,58 @@ onClick={async () => {
     <li>Click an existing booking to view it. To change/cancel existing booking please contact us.</li>
     <li>Past appointments cannot be modified.</li>
     <li>If you still have problems/questions please contact us.</li>
-  </ul>
+    <li>If you are inviting our reverend to your home please note somebody from your household need to come along. This is to make sure the relics are receiving the deserved honor.</li>
+    <li>The English Dhamma Temple Daily running cost is 295AUD. (Electricity, water, Gas etc). Therefore kindly deposit 295$ when you make an appointment to help us with
+        running cost of the temple. </li>
+    <li>295AUD can be deposited to our account below</li>
+  </ul><br />
+<h4 style={{ marginTop: 0 }}>
+  Account Name: ENGLISH DHAMMA ORG <br />
+
+  <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+    BSB: 013-542
+
+    <button
+      onClick={() => copyToClipboard("013-542", "bsb")}
+      style={{
+        padding: "4px 8px",
+        fontSize: "12px",
+        cursor: "pointer",
+        background: "#2e7d32",
+        color: "white",
+        border: "none",
+        borderRadius: "4px",
+      }}
+    >
+      {copied === "bsb" ? "Copied!" : "Copy"}
+    </button>
+  </span>
+
+  <br />
+
+  <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+    Account Number: 430308072
+
+    <button
+      onClick={() => copyToClipboard("430308072", "account")}
+      style={{
+        padding: "4px 8px",
+        fontSize: "12px",
+        cursor: "pointer",
+        background: "#2e7d32",
+        color: "white",
+        border: "none",
+        borderRadius: "4px",
+      }}
+    >
+      {copied === "account" ? "Copied!" : "Copy"}
+    </button>
+  </span>
+
+  <br />
+
+  Reference: Donation
+</h4>
 </div>
 
 <div
@@ -263,8 +328,8 @@ onClick={async () => {
   events={events}
   startAccessor="start"
   endAccessor="end"
-  selectable
-  longPressThreshold={10}
+  selectable="ignoreEvents"
+  longPressThreshold={250}
   onSelectSlot={handleSelectSlot}
   onSelectEvent={handleSelectEvent}
   dayPropGetter={dayPropGetter}
