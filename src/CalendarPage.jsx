@@ -206,6 +206,20 @@ const dayPropGetter = (date) => {
   <h2>📅 Appointments (දානය) Calendar</h2>
 
   {isAdmin ? (
+    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+    <button
+      onClick={() => navigate("/admin/reminders")}
+      style={{
+        padding: "8px 12px",
+        cursor: "pointer",
+        background: "#1565c0",
+        color: "white",
+        border: "none",
+        borderRadius: "6px",
+      }}
+    >
+      📧 Reminders
+    </button>
     <button
 onClick={async () => {
     await signOut(auth);
@@ -222,6 +236,7 @@ onClick={async () => {
     >
       Logout Admin
     </button>
+    </div>
   ) : (
     <button
       onClick={() => navigate("/admin-login")}

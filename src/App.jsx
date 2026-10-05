@@ -9,6 +9,7 @@ import AdminLogin from "./AdminLogin";
 import ProtectedRoute from "./ProtectedRoute";
 import BookingView from "./BookingView";
 import CancelledAppointments from "./CancelledAppointments";
+import AppointmentReminders from "./AppointmentReminders";
 
 const Page = ({title, children}) => (
   <div className="page">
@@ -118,6 +119,15 @@ const sendContactEmail = async (e) => {
 <Route
     path="/admin-login"
     element={<AdminLogin />}
+/>
+
+<Route
+    path="/admin/reminders"
+    element={
+        <ProtectedRoute>
+            <AppointmentReminders />
+        </ProtectedRoute>
+    }
 />
 
 <Route
